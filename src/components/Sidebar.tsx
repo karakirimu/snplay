@@ -35,9 +35,9 @@ const Sidebar: React.FC<SidebarProps> = ({ images, selectedImageIndex, onImageCl
               _hover={{ bg: "gray.600" }}
               ref={(selectedImageIndex !== null && index + 1 === selectedImageIndex) ? selectedImageRef : null}
             >
-              <VStack align="start" gapY={1}>
-                <Text>{index + 1}</Text>
+              <VStack align="center" gapY={1}>
                 <Image key={`thumbnail-${index}`} src={src} alt={`image-${index}`} />
+                <Text>{index + 1}</Text>
               </VStack>
             </Box>
           ))

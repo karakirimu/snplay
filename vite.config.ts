@@ -4,6 +4,6 @@ import tsconfigPaths from "vite-tsconfig-paths"
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/snplay/',
+  base: './',
   plugins: [react(), tsconfigPaths()],
 })
