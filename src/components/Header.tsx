@@ -6,28 +6,35 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu"
-import { handleOpenFolder } from '@/functions/FileHandler';
 import { GoArrowLeft, GoArrowRight } from 'react-icons/go';
 import { BiFirstPage, BiLastPage } from 'react-icons/bi';
+import { importSnConfig, SnConfig } from '@/types/SnConfig';
+import { Property } from '@/functions/useProperty';
+import { SourceMap } from '@/types/SourceMap';
+import AudioPlayer from './AudioPlayer';
 
 interface HeaderProps {
-  onFolderSelect: (files: FileList) => void;
+  onImport: (config: SnConfig) => void;
   onIndexChange: (index: number) => void;
-  selectedIndex: number | null;
+  config: Property<SnConfig>;
+  audioSrc: SourceMap[];
+  index: number;
   lastImageIndex: number | null;
 }
 
-const Header: React.FC<HeaderProps> = ({ onFolderSelect, onIndexChange, selectedIndex, lastImageIndex }) => {
+const Header: React.FC<HeaderProps> = ({ onImport, onIndexChange, config, audioSrc, index, lastImageIndex }) => {
+  const dataIndex = index - 1;
+  const selected = dataIndex !== -1 && config ? config.get().getSource(dataIndex) : undefined;
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (selectedIndex !== null) {
+      if (0 < index) {
         switch (event.key) {
           case 'ArrowLeft':
-            onIndexChange(selectedIndex - 1);
+            onIndexChange(index - 1);
             break;
           case 'ArrowRight':
-            onIndexChange(selectedIndex + 1);
+            onIndexChange(index + 1);
             break;
           case 'Home':
             onIndexChange(1);
@@ -47,12 +54,12 @@ const Header: React.FC<HeaderProps> = ({ onFolderSelect, onIndexChange, selected
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [selectedIndex, lastImageIndex, onIndexChange]);
+  }, [index, lastImageIndex, onIndexChange]);
 
   return (
-    <Box as="header" bg={"gray.700"} borderBottom={"1px solid gray.950"} color="white" p={0}>
-      <HStack justify="space-between" px={2}>
-        <HStack gap={4}>
+    <Box as="header" bg={"gray.700"} borderBottom={"1px solid gray.950"} color="white" p={1}>
+      <HStack justify="space-between" px={1}>
+        <HStack gap={2} w={"15vw"}>
           <MenuRoot size={"sm"}>
             <MenuTrigger asChild>
               <Button variant="outline" size="sm">
@@ -60,41 +67,41 @@ const Header: React.FC<HeaderProps> = ({ onFolderSelect, onIndexChange, selected
               </Button>
             </MenuTrigger>
             <MenuContent>
-              <MenuItem value="open-folder-a" onClick={() => handleOpenFolder({ onFolderSelect })}>
-                Open Folder...
-                {/* Open Folder... <MenuItemCommand>Ctrl+O</MenuItemCommand> */}
+              <MenuItem value="import-a" onClick={() => importSnConfig(onImport)}>
+                Open Playlist
               </MenuItem>
-              {/* <MenuItem value="import-a">
-                Import Playlist <MenuItemCommand>Ctrl+I</MenuItemCommand>
-              </MenuItem> */}
             </MenuContent>
           </MenuRoot>
         </HStack>
-        {(selectedIndex !== null) && (
+        {(index !== 0) && (
           <HStack gap={0}>
-            <IconButton onClick={() => onIndexChange(1)} variant="outline" size="sm">
+            <IconButton onClick={() => onIndexChange(1)} variant="outline" size="sm" title='First image (Home)'>
               <BiFirstPage />
             </IconButton>
-            <IconButton onClick={() => onIndexChange(selectedIndex - 1)} variant="outline" size="sm">
+            <IconButton onClick={() => onIndexChange(index - 1)} variant="outline" size="sm" title='Previous image (←)'>
               <GoArrowLeft />
             </IconButton>
-            <Input size="sm" w="40px" textAlign="center" value={selectedIndex} readOnly />
-            <IconButton onClick={() => onIndexChange(selectedIndex + 1)} variant="outline" size="sm">
+            <Input id='image-index' size="sm" w="6ch" textAlign="center" value={index} readOnly />
+            <IconButton onClick={() => onIndexChange(index + 1)} variant="outline" size="sm" title='Next image (→)'>
               <GoArrowRight />
             </IconButton>
-            <IconButton onClick={() => lastImageIndex && onIndexChange(lastImageIndex)} variant="outline" size="sm">
+            <IconButton onClick={() => lastImageIndex && onIndexChange(lastImageIndex)} variant="outline" size="sm" title='Last image (End)'>
               <BiLastPage />
             </IconButton>
           </HStack>
         )}
         <HStack gap={4}>
-          {/* <IconButton
-            aria-label="Settings"
-            variant="ghost"
-            color="white"
-          >
-            <FaCog />
-          </IconButton> */}
+          {(selected !== undefined && selected.audio) ? 
+            <Box w={"15vw"} ml={4}>
+              <AudioPlayer fileUrl={audioSrc.find((f) => f.id === selected.audio?.id)!.src.objectURL}
+                           autoPlay={config.get().player.autoplay}
+                           volume={config.get().player.volume}
+                           onEnd={() => {
+                            if (config.get().player.autoplay_nextpage) {
+                              onIndexChange(index + 1)
+                            }
+                          }}/>
+            </Box>: <></>}
         </HStack>
       </HStack>
     </Box>

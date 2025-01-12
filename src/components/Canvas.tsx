@@ -1,20 +1,31 @@
-import { Box } from '@chakra-ui/react';
+import { SnConfig } from '@/types/SnConfig';
+import { SourceMap } from '@/types/SourceMap';
+import { Flex } from '@chakra-ui/react';
 import React, { useRef, useEffect, useCallback } from 'react';
+import CaptionCard from './CaptionCard';
 
-interface CanvasProps {
-  imageSrc: string;
+type CanvasProps = {
+  imageSrc: SourceMap[];
+  index: number;
+  config: SnConfig;
 }
 
-const Canvas: React.FC<CanvasProps> = ({ imageSrc }) => {
+const Canvas: React.FC<CanvasProps> = ({ imageSrc, index, config }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const dataIndex = index - 1;
+  const selected = dataIndex !== -1 && config ? config.getSource(dataIndex) : undefined;
+  // const captionCardRef = useRef<CaptionCardHandle>(null);
 
+  // const handleReplay = () => {
+  //     captionCardRef.current?.replay();
+  // };
   const drawImage = useCallback(() => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext('2d');
 
-    if (canvas && context && imageSrc) {
+    if (canvas && context && imageSrc && dataIndex !== -1) {
       const image = new Image();
-      image.src = imageSrc;
+      image.src = imageSrc[dataIndex].src.objectURL;
       image.onload = () => {
         const maxWidth = window.innerWidth - 200; // Adjust for sidebar width
         const maxHeight = window.innerHeight - 40; // Adjust for header height
@@ -35,7 +46,8 @@ const Canvas: React.FC<CanvasProps> = ({ imageSrc }) => {
         context.drawImage(image, 0, 0, width, height);
       };
     }
-  }, [imageSrc]);
+
+  }, [dataIndex, imageSrc]);
 
   useEffect(() => {
     drawImage();
@@ -46,9 +58,15 @@ const Canvas: React.FC<CanvasProps> = ({ imageSrc }) => {
   }, [drawImage]);
 
   return (
-    <Box display="flex" alignItems="center" justifyContent="center" w={"calc(100% - 200px)"} height="calc(100vh - 40px)" p={0}>
-      <canvas ref={canvasRef} style={{ border: '0px solid black' }} />
-    </Box>
+    <Flex w={"100%"} maxH={"100%"} alignContent={"center"} justifyContent={"center"} alignItems={"center"} direction={"column"}>
+        <canvas ref={canvasRef} style={{ border: '0px solid black', maxWidth: '100%', objectFit: "contain" }} />
+        <CaptionCard 
+                      // ref={captionCardRef}
+                      caption={dataIndex !== -1 && selected && selected.text !== undefined ? selected.text.data : ""}
+                      w={"full"}
+                      mt={2}
+                      speed={config.player.text_speed} />
+    </Flex>
   );
 };
 
