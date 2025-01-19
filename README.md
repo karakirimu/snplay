@@ -1,4 +1,4 @@
-# SnEdit
+# SnPlay
 
 This software is web-based simple sound novel player.
 
