@@ -62,11 +62,10 @@ const CaptionCard: React.ForwardRefRenderFunction<CaptionCardHandle, CaptionCard
     return (
         (props.caption) ? (
             <Box
+                ref={captionRef}
                 scrollBehavior={"smooth"}
                 as="section"
-                bg="gray.800"
-                minH={"10ch"}
-                maxH={"30ch"}
+                bg={{ base: "gray.100", _dark: "gray.800" }}
                 borderLeft={"1px solid gray.950"}
                 p={2}
                 m={0}

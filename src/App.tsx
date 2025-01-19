@@ -78,6 +78,65 @@ function App() {
     selectedIndex.set(0);
   }
 
+  const previewSettingCard = (config: SnConfig) => {
+    return (
+      <Card.Root w="lg">
+        <Card.Header>
+          <Card.Title>{config.package_name}</Card.Title>
+          <Card.Description>
+            {config.description}
+          </Card.Description>
+        </Card.Header>
+        <Card.Body>
+          <Stack gap="4" w="full">
+          <Text fontSize={"lg"} >Settings</Text>
+          <Field label={`Text speed: ${config.player.text_speed} (ms)`}>
+            <HStack w={"full"}>
+              <Slider
+                w={"full"}
+                mr={2}
+                step={10}
+                min={0}
+                value={[config.player.text_speed]}
+                max={10000}
+                onValueChange={(e) => { snConfig.set((prev) => ({ ...prev, player: { ...prev.player, text_speed: e.value[0] }}))}}/>
+              <InfoTip content="Time interval to display one character (in milliseconds)" />
+            </HStack>
+          </Field>
+          <Field label={`Volume: ${config.player.volume}`}>
+            <HStack w={"full"}>
+              <Slider
+                mr={2}
+                w={"full"}
+                step={1}
+                min={0}
+                value={[config.player.volume]}
+                max={100}
+                onValueChange={(e) => { snConfig.set((prev) => ({ ...prev, player: { ...prev.player, volume: e.value[0] }}))}}/>
+              <InfoTip content="Default Volume of the player" />
+            </HStack>
+          </Field>
+          <Field label="Autoplay">
+            <Switch checked={config.player.autoplay} 
+                    onCheckedChange={(e) => { snConfig.set((prev) => ({ ...prev, player: { ...prev.player, autoplay: e.checked }}))}}
+                    mt={2}>
+                      Play music when pages are opened
+            </Switch>
+          </Field>
+          <Switch checked={config.player.autoplay_nextpage} 
+                    onCheckedChange={(e) => { snConfig.set((prev) => ({ ...prev, player: { ...prev.player, autoplay_nextpage: e.checked }}))}}
+                    mt={2}>
+                      Go to the next page after autoplay
+            </Switch>
+        </Stack>
+        </Card.Body>
+        <Card.Footer justifyContent="center">
+          <Button variant="outline" onClick={() => handleIndexClick(1)}>Start</Button>
+        </Card.Footer>
+      </Card.Root>
+    );
+  }
+
   return (
     <>
       <Header onImport={importConfig}
@@ -96,54 +155,7 @@ function App() {
                />
       {selectedIndex.get() !== 0 ? <Canvas imageSrc={images.get()} index={selectedIndex.get()} config={snConfig.get()} />
         : (<Flex justifyContent="center" alignItems="center"  w={"100%"} h={"60vh"}>
-        <Card.Root w="lg">
-          <Card.Header>
-            <Card.Title>{snConfig.get().package_name}</Card.Title>
-            <Card.Description>
-              {snConfig.get().description}
-            </Card.Description>
-          </Card.Header>
-          <Card.Body>
-            <Stack gap="4" w="full">
-            <Text fontSize={"lg"} >Settings</Text>
-            <Field label={`Text speed: ${snConfig.get().player.text_speed} (ms)`}>
-              <HStack w={"full"}>
-                <Slider
-                  w={"full"}
-                  mr={2}
-                  step={10}
-                  min={0}
-                  value={[snConfig.get().player.text_speed]}
-                  max={10000}
-                  onValueChange={(e) => { snConfig.set({ ...snConfig.get(), player: { ...snConfig.get().player, text_speed: e.value[0] }})}}/>
-                <InfoTip content="Time interval to display one character (in milliseconds)" />
-              </HStack>
-            </Field>
-            <Field label={`Volume: ${snConfig.get().player.volume}`}>
-              <HStack w={"full"}>
-                <Slider
-                  mr={2}
-                  w={"full"}
-                  step={1}
-                  min={0}
-                  value={[snConfig.get().player.volume]}
-                  max={100}
-                  onValueChange={(e) => { snConfig.set({ ...snConfig.get(), player: { ...snConfig.get().player, volume: e.value[0] }})}}/>
-                <InfoTip content="Default Volume of the player" />
-              </HStack>
-            </Field>
-            <Field label="Autoplay">
-              <Switch checked={snConfig.get().player.autoplay} 
-                      onCheckedChange={(e) => { snConfig.set({ ...snConfig.get(), player: { ...snConfig.get().player, autoplay: e.checked }})}}
-                      mt={2}>
-              </Switch>
-            </Field>
-          </Stack>
-          </Card.Body>
-          <Card.Footer justifyContent="center">
-            <Button variant="outline" onClick={() => handleIndexClick(1)}>Start</Button>
-          </Card.Footer>
-        </Card.Root>
+          {previewSettingCard(snConfig.get())}
         </Flex>)}
       </HStack>
     </>

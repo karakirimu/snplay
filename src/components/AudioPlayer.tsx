@@ -43,7 +43,7 @@ const AudioPlayer : React.FC<AudioPlayerProps> = ({fileUrl, autoPlay, volume, on
                         controls.play();
                     }
                 }}/>
-            <Text textAlign="right" minW={"12ch"} mx={2}>{formatTime(state.time || 0)} / {formatTime(state.duration || 0)}</Text>
+            <Text color={{ base: "black", _dark: "white" }} textAlign="right" minW={"12ch"} mx={2}>{formatTime(state.time || 0)} / {formatTime(state.duration || 0)}</Text>
         </HStack>
     );
 };

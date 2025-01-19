@@ -5,6 +5,7 @@ import { FileAttribute } from '@/types/FileAttribute';
 import { importSnConfig, SnConfig } from '@/types/SnConfig';
 import { Property } from '@/functions/useProperty';
 import { SourceMap } from '@/types/SourceMap';
+import { IoHome } from 'react-icons/io5';
 
 interface SidebarProps {
   images: Property<SourceMap[]>;
@@ -25,11 +26,11 @@ const Sidebar: React.FC<SidebarProps> = ({ images, selectedIndex, onClick, onImp
   }, [selectedIndex]);
 
   return (
-    <Box as="aside" bg="gray.800" borderRight={"1px solid gray.950"} minW="220px" maxW="220px" p={4} minH="calc(100vh - 48px)" maxH="calc(100vh - 48px)" overflowY="auto">
+    <Box as="aside" bg={{ base: "gray.100", _dark: "gray.800" }} borderRight={"1px solid gray.950"} minW="220px" maxW="220px" p={4} minH="calc(100vh - 48px)" maxH="calc(100vh - 48px)" overflowY="auto">
       <VStack align="start" gap={4}>
         {images.get().length > 0 ? (
           <>
-          <Button w={"full"} variant={"outline"} onClick={() => onHomeClick()}>Home</Button>
+          <Button w={"full"} variant={"outline"} onClick={() => onHomeClick()}><IoHome /> Home</Button>
           {images.get().map((im, index) => (
             <ImageItem
               key={im.src.objectURL}
@@ -77,8 +78,8 @@ const ImageItem: React.FC<ImageItemProps> = ({ id, index, src, selectedImageInde
         p={2}
         borderRadius="md"
         maxW={"100%"}
-        bg={(selectedImageIndex !== null && index + 1 === selectedImageIndex) ? "gray.700" : "transparent"}
-        _hover={{ bg: "gray.600" }}
+        bg={(selectedImageIndex !== null && index + 1 === selectedImageIndex) ? { base: "gray.200", _dark: "gray.700" } : "transparent"}
+        _hover={{ bg: { base: "gray.300", _dark: "gray.600" } }}
         ref={(selectedImageIndex !== null && index + 1 === selectedImageIndex) ? selectedImageRef : null}
       >
         <VStack align="center" gapY={1}>

@@ -9,9 +9,10 @@ import {
 import { GoArrowLeft, GoArrowRight } from 'react-icons/go';
 import { BiFirstPage, BiLastPage } from 'react-icons/bi';
 import { importSnConfig, SnConfig } from '@/types/SnConfig';
-import { Property } from '@/functions/useProperty';
+import { Property, useProperty } from '@/functions/useProperty';
 import { SourceMap } from '@/types/SourceMap';
 import AudioPlayer from './AudioPlayer';
+import { ColorModeButton } from './ui/color-mode';
 
 interface HeaderProps {
   onImport: (config: SnConfig) => void;
@@ -57,12 +58,12 @@ const Header: React.FC<HeaderProps> = ({ onImport, onIndexChange, config, audioS
   }, [index, lastImageIndex, onIndexChange]);
 
   return (
-    <Box as="header" bg={"gray.700"} borderBottom={"1px solid gray.950"} color="white" p={1}>
+    <Box as="header" bg={{ base: "gray.200", _dark: "gray.700" }} borderBottom={"1px solid gray.950"} color="white" p={1}>
       <HStack justify="space-between" px={1}>
         <HStack gap={2} w={"15vw"}>
           <MenuRoot size={"sm"}>
             <MenuTrigger asChild>
-              <Button variant="outline" size="sm">
+              <Button variant="ghost" size="sm">
                 File
               </Button>
             </MenuTrigger>
@@ -81,7 +82,7 @@ const Header: React.FC<HeaderProps> = ({ onImport, onIndexChange, config, audioS
             <IconButton onClick={() => onIndexChange(index - 1)} variant="outline" size="sm" title='Previous image (←)'>
               <GoArrowLeft />
             </IconButton>
-            <Input id='image-index' size="sm" w="6ch" textAlign="center" value={index} readOnly />
+            <Input color={{ base: "black", _dark: "white" }} id='image-index' size="sm" w="6ch" textAlign="center" value={index} readOnly />
             <IconButton onClick={() => onIndexChange(index + 1)} variant="outline" size="sm" title='Next image (→)'>
               <GoArrowRight />
             </IconButton>
@@ -98,10 +99,13 @@ const Header: React.FC<HeaderProps> = ({ onImport, onIndexChange, config, audioS
                            volume={config.get().player.volume}
                            onEnd={() => {
                             if (config.get().player.autoplay_nextpage) {
-                              onIndexChange(index + 1)
+                              setTimeout(() => {
+                                onIndexChange(index + 1)
+                              }, 3000);
                             }
                           }}/>
             </Box>: <></>}
+            <ColorModeButton/>
         </HStack>
       </HStack>
     </Box>

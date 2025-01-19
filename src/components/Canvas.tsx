@@ -1,6 +1,6 @@
 import { SnConfig } from '@/types/SnConfig';
 import { SourceMap } from '@/types/SourceMap';
-import { Flex } from '@chakra-ui/react';
+import { Box, Flex, HStack } from '@chakra-ui/react';
 import React, { useRef, useEffect, useCallback } from 'react';
 import CaptionCard from './CaptionCard';
 
@@ -14,11 +14,7 @@ const Canvas: React.FC<CanvasProps> = ({ imageSrc, index, config }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dataIndex = index - 1;
   const selected = dataIndex !== -1 && config ? config.getSource(dataIndex) : undefined;
-  // const captionCardRef = useRef<CaptionCardHandle>(null);
 
-  // const handleReplay = () => {
-  //     captionCardRef.current?.replay();
-  // };
   const drawImage = useCallback(() => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext('2d');
@@ -57,16 +53,40 @@ const Canvas: React.FC<CanvasProps> = ({ imageSrc, index, config }) => {
     };
   }, [drawImage]);
 
-  return (
-    <Flex w={"100%"} maxH={"100%"} alignContent={"center"} justifyContent={"center"} alignItems={"center"} direction={"column"}>
-        <canvas ref={canvasRef} style={{ border: '0px solid black', maxWidth: '100%', objectFit: "contain" }} />
-        <CaptionCard 
-                      // ref={captionCardRef}
-                      caption={dataIndex !== -1 && selected && selected.text !== undefined ? selected.text.data : ""}
-                      w={"full"}
-                      mt={2}
+  function bottomLayout() {
+    const maxH = dataIndex !== -1 && selected && selected.text && selected.text !== undefined && selected.text.data.length > 0 ? '88vh' : '100vh';
+    return (
+      <Flex w={"100%"} maxH="calc(100vh - 56px)" alignContent={"center"} justifyContent={"center"} alignItems={"center"} direction={"column"}>
+        <canvas ref={canvasRef} style={{ border: '0px solid black', maxHeight: maxH, maxWidth: '100%', objectFit: "contain" }} />
+        <CaptionCard caption={dataIndex !== -1 && selected && selected.text !== undefined ? selected.text.data : ""}
+                    minH={"10ch"}
+                    maxH={"30ch"}
+                    w={"full"}
+                    mt={2}
                       speed={config.player.text_speed} />
-    </Flex>
+      </Flex>
+    )
+  }
+
+  function rightLayout() {
+    const maxW = dataIndex !== -1 && selected && selected.text && selected.text !== undefined && selected.text.data.length > 0 ? '88vh' : '100vh';
+    return (
+      <HStack w={"100%"} maxH="calc(100vh - 56px)" alignContent={"center"} justifyContent={"center"} alignItems={"center"} direction={"column"}>
+        <canvas ref={canvasRef} style={{ maxWidth: maxW, maxHeight: "calc(100vh - 56px)", objectFit: "contain" }} />
+        <CaptionCard
+          caption={dataIndex !== -1 && selected && selected.text !== undefined ? selected.text.data : ""}
+          minW={"20ch"}
+          maxW={"40ch"}
+          maxH="calc(100vh - 56px)"
+          speed={config.player.text_speed} />
+      </HStack>
+    )
+  }
+
+  return (
+    <Box flexGrow={1} display="flex" alignItems="center" justifyContent="space-between" maxH="calc(100vh - 56px)" m={1}>
+      {selected?.config.caption_position === 'bottom' ? bottomLayout() : rightLayout()}
+    </Box>
   );
 };
 
