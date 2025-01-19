@@ -9,7 +9,7 @@ import {
 import { GoArrowLeft, GoArrowRight } from 'react-icons/go';
 import { BiFirstPage, BiLastPage } from 'react-icons/bi';
 import { importSnConfig, SnConfig } from '@/types/SnConfig';
-import { Property, useProperty } from '@/functions/useProperty';
+import { Property } from '@/functions/useProperty';
 import { SourceMap } from '@/types/SourceMap';
 import AudioPlayer from './AudioPlayer';
 import { ColorModeButton } from './ui/color-mode';
